@@ -2,8 +2,8 @@
 /node_modules
 /.pnp
 .pnp.js
-
-# testing
+api-keys.ts
+# testinggst
 /coverage
 
 # production
