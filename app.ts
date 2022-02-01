@@ -10,6 +10,7 @@ import { MONGO_DB_URL } from './api-keys';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import HttpError from './models/http-error';
+import userRouter from './routes/users-routes';
 
 const app: Application = express();
 
@@ -24,6 +25,8 @@ app.use<RequestHandler>((req, res, next): void => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
   next();
 });
+
+app.use('/users', userRouter);
 
 app.use<RequestHandler>((req, res, next): void => {
   const error = new HttpError('Could not find this route', 404);
