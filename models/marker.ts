@@ -1,11 +1,18 @@
 import mongoose from 'mongoose';
+import { PhotoInterface } from './photo';
+
 const Schema = mongoose.Schema;
 
-const markerSchema = new Schema({
+export interface MarkerInterface {
+  title: string;
+  description: string;
+  location: { lat: number; lng: number };
+  photos: PhotoInterface[];
+}
+
+const markerSchema = new Schema<MarkerInterface>({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  image: { type: String, required: true },
-  address: { type: String, required: true },
   location: {
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },

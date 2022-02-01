@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Request, Response, NextFunction } from 'express';
+import { HydratedDocument } from 'mongoose';
 import { validationResult } from 'express-validator';
 import HttpError from '../models/http-error';
 import User, { UserInterface } from '../models/user';
@@ -9,13 +10,14 @@ export const signup = async (
   res: Response,
   next: NextFunction
 ) => {
-  const errors = validationResult(req);
+  const errors: any = validationResult(req);
+  console.log(errors);
   if (!errors.isEmpty()) {
     console.log(errors);
     return next(new HttpError(`${errors} is invalid.`, 422));
   }
   const { username, email, password }: UserInterface = req.body;
-  let existingUser: UserInterface | null;
+  let existingUser: HydratedDocument<UserInterface> | null;
 
   try {
     existingUser = await User.findOne({ email: email });
@@ -52,10 +54,12 @@ export const login = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(req);
   const { email, password }: { email: string; password: string } = req.body;
-  let existingUser: UserInterface | null;
+  let existingUser: HydratedDocument<UserInterface> | null;
   try {
     existingUser = await User.findOne({ email: email });
+    console.log(existingUser);
   } catch (err) {
     const error = new HttpError(
       'An error occured while logging in, try again.',
@@ -70,5 +74,8 @@ export const login = async (
     );
     return next(error);
   }
-  res.json({ message: 'logged in successfully', user: existingUser });
+  res.json({
+    message: 'logged in successfully',
+    user: existingUser.toObject({ getters: true }),
+  });
 };
