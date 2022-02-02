@@ -11,6 +11,8 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import HttpError from './models/http-error';
 import userRouter from './routes/users-routes';
+import markerRouter from './routes/markers-routes';
+import photoRouter from './routes/photos-routes';
 
 const app: Application = express();
 
@@ -27,6 +29,8 @@ app.use<RequestHandler>((req, res, next): void => {
 });
 
 app.use('/users', userRouter);
+app.use('/markers', markerRouter);
+app.use('/photos', photoRouter);
 
 app.use<RequestHandler>((req, res, next): void => {
   const error = new HttpError('Could not find this route', 404);

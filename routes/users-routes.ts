@@ -1,6 +1,6 @@
 import express from 'express';
 import { check } from 'express-validator';
-import usersController = require('../controllers/users-controller');
+import { signup, login } from '../controllers/users-controller';
 
 const userRouter = express.Router();
 
@@ -13,9 +13,9 @@ userRouter.post(
     check('email').normalizeEmail().isEmail(),
     check('password').isLength({ min: 8 }),
   ],
-  usersController.signup
+  signup
 );
 
-userRouter.post('/login', usersController.login);
+userRouter.post('/login', login);
 
 export default userRouter;

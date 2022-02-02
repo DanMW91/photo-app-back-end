@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Request, Response, NextFunction } from 'express';
 import { HydratedDocument } from 'mongoose';
 import { validationResult } from 'express-validator';

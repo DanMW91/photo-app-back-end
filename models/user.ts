@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
+import { PhotoInterface } from './photo';
 const Schema = mongoose.Schema;
 
 export interface UserInterface {
   username: string;
   email: string;
   password: string;
-  photos: string[];
+  photos: PhotoInterface[];
 }
 
 const userSchema = new Schema<UserInterface>({
@@ -16,7 +17,7 @@ const userSchema = new Schema<UserInterface>({
   photos: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Photo' }],
 });
 
-userSchema.plugin(uniqueValidator);
+// userSchema.plugin(uniqueValidator);
 
 const User = mongoose.model('User', userSchema);
 
