@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { HydratedDocument } from 'mongoose';
 import { validationResult } from 'express-validator';
 import HttpError from '../models/http-error';
-import Marker, { MarkerInterface } from '../models/marker';
+import User, { UserInterface } from '../models/user';
 import Photo, { PhotoInterface } from '../models/photo';
 
 export const getPhotosForMarker = async (
@@ -24,19 +24,37 @@ export const getPhotosForMarker = async (
   res.json({
     photos: photos?.map((photo) => photo.toObject({ getters: true })),
   });
+};
 
-  // try {
-  //   markers = await Marker.find({});
-  // } catch (err) {
-  //   const error = new HttpError('failed to fetch markers', 500);
-  //   return next(error);
-  // }
-
-  // if (!markers || markers.length === 0) {
-  //   return next(new HttpError('Could not find any markers.', 404));
-  // }
-
-  // res.json({
-  //   markers: markers.map((marker) => marker.toObject({ getters: true })),
-  // });
+export const getPhotosForUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.params.userId;
+  let photoObj: {
+    username: string;
+    photos: PhotoInterface[];
+  } = { username: '', photos: [] };
+  try {
+    const user: HydratedDocument<UserInterface> | null = await User.findById(
+      userId
+    ).populate({
+      path: 'photos',
+      populate: {
+        path: 'location',
+      },
+    });
+    if (user) {
+      console.log(user);
+      photoObj.photos = user.photos;
+      photoObj.username = user.username;
+      console.log(photoObj);
+    } else {
+      return next(new HttpError(`Could not find user for id ${userId}.`, 404));
+    }
+  } catch (err) {
+    const error = new HttpError('failed to find user', 404);
+  }
+  res.json(photoObj);
 };
