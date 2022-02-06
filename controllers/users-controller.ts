@@ -53,12 +53,10 @@ export const login = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(req);
   const { email, password }: { email: string; password: string } = req.body;
   let existingUser: HydratedDocument<UserInterface> | null;
   try {
     existingUser = await User.findOne({ email: email });
-    console.log(existingUser);
   } catch (err) {
     const error = new HttpError(
       'An error occured while logging in, try again.',
@@ -73,7 +71,7 @@ export const login = async (
     );
     return next(error);
   }
-  res.json({
+  res.status(200).json({
     message: 'logged in successfully',
     user: existingUser.toObject({ getters: true }),
   });

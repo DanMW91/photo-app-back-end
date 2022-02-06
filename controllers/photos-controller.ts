@@ -12,11 +12,10 @@ export const getPhotosForMarker = async (
   next: NextFunction
 ) => {
   const locationId = req.params.locationId;
-  console.log(locationId);
+
   let photos: HydratedDocument<PhotoInterface>[] | undefined;
   try {
     photos = await Photo.find({ location: locationId }).populate('user');
-    console.log(photos);
   } catch (err) {
     const error = new HttpError('failed to fetch photos for location', 500);
     next(error);
@@ -46,10 +45,8 @@ export const getPhotosForUser = async (
       },
     });
     if (user) {
-      console.log(user);
       photoObj.photos = user.photos;
       photoObj.username = user.username;
-      console.log(photoObj);
     } else {
       return next(new HttpError(`Could not find user for id ${userId}.`, 404));
     }

@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 export interface PhotoInterface {
   title: string;
   description: string;
-  url: string;
+  file: string;
   location: MarkerInterface;
   user: UserInterface;
 }
@@ -15,7 +15,7 @@ export interface PhotoInterface {
 const photoSchema = new Schema<PhotoInterface>({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  url: { type: String, required: true },
+  file: { type: String, required: true },
   location: { type: mongoose.Types.ObjectId, required: true, ref: 'Marker' },
   user: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
 });

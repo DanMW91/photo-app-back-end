@@ -14,33 +14,45 @@ export const newMarker = async (
 ) => {
   const errors: any = validationResult(req);
   console.log(req.body);
+
   // console.log(errors);
   if (!errors.isEmpty()) {
     console.log(errors);
     return next(new HttpError(`${errors} is invalid.`, 422));
   }
 
-  const { coords, name, description } = req.body.marker;
+  const { markerLat: lat, markerLng: lng, markerName, markerDesc } = req.body;
 
   const newMarker: HydratedDocument<MarkerInterface> = new Marker({
-    coords,
-    name,
-    description,
+    coords: {
+      lat,
+      lng,
+    },
+    name: markerName,
+    description: markerDesc,
     photos: [],
   });
 
   const {
-    user: userId,
-    title,
-    description: photoDescription,
-    url,
-  } = req.body.photo;
+    photoUser: userId,
+    photoTitle,
+    photoDesc: description,
+    file,
+  } = req.body;
 
-  const newPhoto: HydratedDocument<PhotoInterface> = new Photo({
-    title,
-    description: photoDescription,
-    url,
-  });
+  let newPhoto: HydratedDocument<PhotoInterface>;
+
+  if (req?.file?.path) {
+    newPhoto = new Photo({
+      title: photoTitle,
+      description,
+      file: req.file.path,
+    });
+  } else {
+    const error = new HttpError('no photo provided', 500);
+    return next(error);
+  }
+  console.log(newMarker);
 
   try {
     const creator = await User.findById(userId);
@@ -56,17 +68,17 @@ export const newMarker = async (
       creator.photos.push(newPhoto);
       await creator.save({ session: sess });
       await sess.commitTransaction();
-      console.log('success maybe');
     } else {
-      console.log('creator == null');
-      throw 'Internal Error, try again';
+      throw 'Cannot find current user, try again';
     }
   } catch (err) {
     console.log(err);
     const error = new HttpError('creating place failed', 500);
     return next(error);
   }
-  res.status(201).json({ marker: newMarker.toObject({ getters: true }) });
+  // console.log(newMarker.toObject({ getters: true }));
+  // console.log(newMarker);
+  res.status(201).json({ message: 'success' });
 };
 
 export const getAllMarkers = async (
